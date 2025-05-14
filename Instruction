@@ -1,0 +1,34 @@
+---Basic Auth---
+
+https://www.base64encode.org/ to encode admin:admin or tan:Pass123
+
+Open thunderclient
+
+get http://127.0.0.1:8000/endpoint1
+
+go to headers
+
+add Authorization: Basic B64code
+
+send
+
+---Jwt Auth--- 
+
+Open thunderclient
+
+post http://127.0.0.1:8000/token
+
+body -> Form-encode
+
+add username: admin or johndoe
+add password: admin123 or secret
+
+send -> kuha si token
+
+change to get http://127.0.0.1:8000/secure-data or normal-data
+
+go to header
+
+Authorization: Bearer tokencode
+
+send
