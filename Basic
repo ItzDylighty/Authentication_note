@@ -1,0 +1,39 @@
+from fastapi import FastAPI, Request, HTTPException, status
+import base64
+
+app = FastAPI()
+
+users = {
+    "John": "1234",
+    "alice": "4567"
+}
+
+def get_credentials_from_auth_header(auth_header: str):
+    if not auth_header.startswith("Basic "):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        encoded = auth_header.split(" ")[1]
+        decoded = base64.b64decode(encoded).decode("utf-8")
+        username, password = decoded.split(":", 1)
+        return username, password
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+@app.get("/secure-endpoint")  # palit lang ng URL
+async def secure_endpoint(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    username, password = get_credentials_from_auth_header(auth_header)
+
+    if users.get(username) != password:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    return {"message": f"Hello {username}, from admin!"}  # palit lang ng message
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
